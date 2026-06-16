@@ -1,8 +1,8 @@
-package com.example.service;
+package com.example.transaction.service;
 
-import com.example.entity.Employee;
-import com.example.exception.EmployeeException;
-import com.example.repository.EmployeeRepository;
+import com.example.transaction.entity.Employee;
+import com.example.transaction.exception.EmployeeException;
+import com.example.transaction.repository.EmployeeRepository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ public class EmployeeService {
         // Simulating error
         throw new RuntimeException(
                 "Something went wrong!");
-        // ✅ Rolls back — employee NOT saved
+        // Rolls back — employee NOT saved
     }
 
     // ============================================
@@ -58,18 +58,18 @@ public class EmployeeService {
         log.info("Saved — throwing checked exception");
 
         throw new Exception("Checked Exception!");
-        // ❌ Does NOT rollback by default!
+        // Does NOT rollback by default!
         // Employee IS saved even though exception thrown
     }
 
     // ============================================
     // SCENARIO 4 — Rollback on Checked Exception
     // ============================================
-    @Transactional(rollbackFor = EmployeeException.class)
+    @Transactional(rollbackFor = Exception.class)
     public void saveWithRollbackForChecked(
             Employee employee) throws Exception {
         employeeRepository.save(employee);
-        log.info("Saved — throwing checked exception");
+        log.info("Saved — throwing checked Exception");
 
         throw new Exception("Checked Exception!");
         // ✅ Rolls back because rollbackFor specified
