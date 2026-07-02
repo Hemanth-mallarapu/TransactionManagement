@@ -5,10 +5,7 @@ import com.example.transaction.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
@@ -71,6 +68,40 @@ public class EmployeeController {
                     .badRequest()
                     .body("Rolled back with Checked Exception : " + e.getMessage());
         }
+    }
+
+    @PostMapping("/save-self-invocation")
+    public ResponseEntity<?> saveWithOutSelfInvocation(@RequestBody Employee employee) {
+        try {
+            employeeService.createEmployeeWithSelfInvocation(employee);
+            return ResponseEntity.ok("Saved");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Exception raised due to self Invocation Transaction Ignored : " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/save-self-proxy")
+    public ResponseEntity<?> saveWithSelfInvocation(@RequestBody Employee employee) {
+        try {
+            employeeService.createEmployeeWithSelfProxy(employee);
+            return ResponseEntity.ok("Saved");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Exception raised due to self Invocation : " + e.getMessage());
+        }
+    }
+    @PostMapping("/saveMultipleEmployees")
+    public ResponseEntity<?> savePropagationRequired(@RequestBody Employee employee) {
+        try {
+            employeeService.saveWithRequired(employee);
+            return ResponseEntity.ok("Saved");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Exception " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllEmployees() {
+        return ResponseEntity.ok(employeeService.getAllEmployees());
     }
 
 }
